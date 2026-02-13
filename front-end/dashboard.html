@@ -1,0 +1,61 @@
+<div id="header"></div>
+<div id="sidebar"></div>
+<div id="footer"></div>
+<script>
+fetch('partials/header.html')
+  .then(res => res.text())
+  .then(data => document.getElementById('header').innerHTML = data);
+
+fetch('partials/sidebar.html')
+  .then(res => res.text())
+  .then(data => document.getElementById('sidebar').innerHTML = data);
+
+  fetch('partials/footer.html')
+  .then(res => res.text())
+  .then(data => document.getElementById('footer').innerHTML = data);
+</script>
+
+
+<div id="sidebar"></div>
+
+<div class="page-wrapper" style="margin-top: -70px;">
+
+    <div id="header"></div>
+
+    <div class="main-content">
+
+        <div class="row g-4 mt-3">
+
+            <!-- Graph Box 1 -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 p-3">
+                    <h6 class="mb-3 text-success">Sales Trend</h6>
+                    <div style="height:260px;"></div>
+                </div>
+            </div>
+
+            <!-- Graph Box 2 -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm rounded-4 p-3">
+                    <h6 class="mb-3 text-success">Spoilage Analysis</h6>
+                    <div style="height:260px;"></div>
+                </div>
+            </div>
+
+        </div>
+        <div class="mt-2">
+    <div class="card border-0 shadow-sm rounded-4 p-3 w-100">
+        <h6 class="mb-3 text-success">Spoilage Analysis</h6>
+        <div style="height:260px;"></div>
+    </div>
+</div>
+
+</div>
+
+
+
+    </div>
+
+    <div id="footer"></div>
+
+</div>
