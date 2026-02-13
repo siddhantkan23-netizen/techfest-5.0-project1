@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Smart Vendor AI</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    background:#f5f7f6;
+}
+
+.icon-sidebar{
+    width:80px;
+    background:#ffffff;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    display:flex;
+    flex-direction:column;
+    box-shadow:2px 0 12px rgba(0,0,0,0.06);
+}
+
+/* Each item full box */
+.icon-sidebar{
+    width:80px;
+    background:#ffffff;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    display:grid;
+    grid-template-rows: repeat(5, minmax(95px, 1fr));
+    box-shadow:2px 0 12px rgba(0,0,0,0.06);
+}
+
+/* Full height boxes */
+.icon-sidebar a{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    color:#198754;
+    font-size:22px;
+    text-decoration:none;
+    height: 80px;
+
+    border-bottom:1px solid #f0f0f0;
+    transition:.25s ease;
+}
+
+/* Remove last divider */
+.icon-sidebar a:last-child{
+    border-bottom:none;
+}
+.icon-sidebar a.active::before{
+    content:'';
+    position:absolute;
+    left:0;
+    top:0;
+    height:100%;
+    width:4px;
+    background:#198754;
+}
+
+/* Hover */
+.icon-sidebar a:hover{
+    background:#e9f7ef;
+}
+
+.icon-sidebar a.active{
+    background:#e9f7ef;
+    position:relative;
+}
+.card{
+    transition:.3s ease;
+}
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.top-header{
+    margin-left:70px;
+    background:#ffffff;
+    color:#198754;           /* green text */
+    padding:14px 22px;
+    font-weight:600;
+    font-size:18px;
+    justify-content:space-between;   /* 👈 THIS pushes right side */
+
+    display:flex;
+    align-items:center;
+
+    box-shadow:0 2px 10px rgba(0,0,0,0.06);
+    border-bottom:1px solid #eaeaea;
+}
+
+
+/* Content */
+.main-content{
+    margin-left:70px;
+    padding:20px;
+}
+
+/* Mobile */
+@media(max-width:768px){
+    .icon-sidebar{
+        display:none;
+    }
+    .top-header{
+        margin-left:0;
+    }
+    .main-content{
+        margin-left:0;
+        padding-bottom:80px;
+    }
+}
+
+/* Bottom nav */
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:#ffffff;
+    display:flex;
+    justify-content:space-around;
+
+    box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+}
+
+.bottom-nav a{
+    flex:1;
+    text-align:center;
+    padding:20px 0;
+    color:#198754;
+}
+
+.bottom-nav a.active{
+    background:#e9f7ef;
+    box-shadow:0 0 15px rgba(25,135,84,0.6);
+}
+.header-right{
+    cursor:pointer;
+}
+
+.profile-circle{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:#198754;
+    color:white;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 0 8px rgba(25,135,84,0.5);
+    transition:.3s;
+}
+
+.profile-circle:hover{
+    transform:scale(1.05);
+}
+
+
+</style>
+</head>
+<body>

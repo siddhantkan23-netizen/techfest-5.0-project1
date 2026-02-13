@@ -1,0 +1,25 @@
+<div class="icon-sidebar d-none d-md-flex">
+    <a href="index.php" class="active"><i class="bi bi-house"></i></a>
+    <a href="#"><i class="bi bi-graph-up"></i></a>
+    <a href="#"><i class="bi bi-people"></i></a>
+    <a href="#"><i class="bi bi-headset"></i></a>
+    <a href="#"><i class="bi bi-three-dots"></i></a>
+</div>
+
+
+
+<div class="top-header">
+    <div>
+        🥕 <strong>Smart Vendor AI</strong>
+    </div>
+
+    <div class="header-right d-flex align-items-center gap-3">
+        <i class="bi bi-bell fs-5 text-success"></i>
+
+        <div class="profile-circle">
+            SK
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
