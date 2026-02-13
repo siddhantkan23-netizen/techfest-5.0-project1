@@ -4,22 +4,1166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vyapari Mitra</title>
+    <title>VyapariMitra - Smart Shop Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    This is a normal page
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <ul>
-        {% for link in links %}
-        {% for name, url in link.items() %}
-        <li>
-            <a href="{{ url }}">{{ name }}</a>
-        </li>
-        {% endfor %}
-        {% endfor %}
-    </ul>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #10b981;
+            --accent-color: #f59e0b;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+            --text-color: #4b5563;
+            --border-color: #e5e7eb;
+            --gradient-1: linear-gradient(135deg, #2563eb, #10b981);
+            --gradient-2: linear-gradient(135deg, #f59e0b, #2563eb);
+        }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 200px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            min-width: 200px;
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-large {
+            padding: 1rem 2.5rem;
+            font-size: 1.05rem;
+        }
+
+        /* ========== HERO SECTION ========== */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 60px 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f9fafb 0%, #f0f4ff 100%);
+        }
+
+        .animated-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            filter: blur(50px);
+            opacity: 0.3;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--primary-color);
+            top: -50px;
+            right: -100px;
+            animation: blob-animation 8s infinite;
+        }
+
+        .blob-2 {
+            width: 350px;
+            height: 350px;
+            background: var(--secondary-color);
+            bottom: -100px;
+            left: 50px;
+            animation: blob-animation 7s infinite reverse;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-color);
+            top: 200px;
+            left: 200px;
+            animation: blob-animation 9s infinite;
+        }
+
+        @keyframes blob-animation {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+        }
+
+        .hero-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .gradient-text {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 2.5rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .stat h3 {
+            font-size: 2rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .stat p {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-visual {
+            width: 300px;
+            height: 300px;
+            background: var(--gradient-1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            color: white;
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-card i {
+            font-size: 2rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .card-1 {
+            top: -20px;
+            left: -60px;
+            animation-delay: 0s;
+        }
+
+        .card-2 {
+            bottom: 20px;
+            left: -80px;
+            animation-delay: 0.5s;
+        }
+
+        .card-3 {
+            top: 80px;
+            right: -60px;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* ========== FEATURES SECTION ========== */
+        .features {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .section-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.15);
+            transform: translateY(-10px);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .icon-1 {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        }
+
+        .icon-2 {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .icon-3 {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .icon-4 {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .icon-5 {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+        }
+
+        .icon-6 {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .feature-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-link:hover {
+            gap: 1rem;
+        }
+
+        /* ========== BENEFITS SECTION ========== */
+        .benefits {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f9fafb 0%, #f0f4ff 100%);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 3rem;
+        }
+
+        .benefit-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.1);
+        }
+
+        .benefit-number {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: var(--gradient-1);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .benefit-item h3 {
+            font-size: 1.3rem;
+            color: var(--dark-color);
+            margin-bottom: 0.8rem;
+        }
+
+        .benefit-item p {
+            color: var(--text-color);
+            line-height: 1.7;
+        }
+
+        /* ========== HOW IT WORKS ========== */
+        .how-it-works {
+            padding: 100px 0;
+            background: white;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            position: relative;
+        }
+
+        .step {
+            background: linear-gradient(135deg, #f9fafb 0%, #f0f4ff 100%);
+            padding: 2.5rem;
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.1);
+        }
+
+        .step-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .step h3 {
+            font-size: 1.3rem;
+            color: var(--dark-color);
+            margin-bottom: 0.8rem;
+        }
+
+        .step p {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .step-arrow {
+            position: absolute;
+            bottom: 30px;
+            right: -25px;
+            font-size: 2rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .step-arrow {
+                display: none;
+            }
+        }
+
+        /* ========== CTA SECTION ========== */
+        .cta-section {
+            background: var(--gradient-2);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .cta-content h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-section .btn-primary {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-section .btn-primary:hover {
+            transform: translateY(-3px);
+        }
+
+        .cta-section .btn-outline {
+            border-color: white;
+            color: white;
+        }
+
+        .cta-section .btn-outline:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            background: var(--dark-color);
+            color: white;
+            padding: 60px 20px 20px;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-section h3,
+        .footer-section h4 {
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-section p {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: white;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-buttons {
+                gap: 0.5rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .hero-cta-buttons {
+                gap: 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-content h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-section {
+                min-width: auto;
+            }
+
+            .logo-text {
+                display: none;
+            }
+
+            .nav-buttons {
+                flex-wrap: wrap;
+            }
+
+            .hero-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn-large {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h1 class="logo-text">VyapariMitra</h1>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#benefits" class="nav-link">Benefits</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+            <div class="nav-buttons">
+                <a href="/login" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/signup" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Animated Background -->
+    <section class="hero">
+        <div class="animated-bg">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+            <div class="blob blob-3"></div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Revolutionize Your Shop</span>
+                </h1>
+                <h2 class="hero-subtitle">With Intelligent Management System</h2>
+                <p class="hero-description">
+                    VyapariMitra is your all-in-one solution for shop management. Control inventory, reduce spoilage,
+                    and predict demand with AI-powered insights. Take your retail business to the next level.
+                </p>
+
+                <div class="hero-cta-buttons">
+                    <a href="/signup" class="btn btn-primary btn-large">
+                        <i class="fas fa-rocket"></i> Get Started Now
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-large">
+                        <i class="fas fa-play-circle"></i> Learn More
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat">
+                        <h3>10K+</h3>
+                        <p>Active Users</p>
+                    </div>
+                    <div class="stat">
+                        <h3>500+</h3>
+                        <p>Shops Managed</p>
+                    </div>
+                    <div class="stat">
+                        <h3>95%</h3>
+                        <p>Waste Reduced</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="floating-card card-1">
+                    <i class="fas fa-chart-line"></i>
+                    <p>Analytics</p>
+                </div>
+                <div class="floating-card card-2">
+                    <i class="fas fa-boxes"></i>
+                    <p>Inventory</p>
+                </div>
+                <div class="floating-card card-3">
+                    <i class="fas fa-brain"></i>
+                    <p>AI Insights</p>
+                </div>
+                <div class="main-visual">
+                    <i class="fas fa-store-alt"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Powerful Features</h2>
+                <p class="section-subtitle">Everything you need to manage your shop efficiently</p>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon icon-1">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <h3>Smart Inventory</h3>
+                    </div>
+                    <p>Real-time inventory tracking with automated stock management and SKU organization for seamless
+                        operations.</p>
+                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon icon-2">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3>Reduce Spoilage</h3>
+                    </div>
+                    <p>Intelligent expiry date tracking and waste management system to minimize product loss and boost
+                        profitability.</p>
+                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon icon-3">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h3>AI Forecasting</h3>
+                    </div>
+                    <p>Machine learning powered demand prediction to optimize stock levels and make data-driven
+                        decisions.</p>
+                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon icon-4">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3>Analytics Hub</h3>
+                    </div>
+                    <p>Comprehensive sales reports, customer insights, and trend analysis all in one intuitive
+                        dashboard.</p>
+                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon icon-5">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Team Management</h3>
+                    </div>
+                    <p>Manage employees, assign roles, track performance, and streamline team coordination effortlessly.
+                    </p>
+                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <div class="feature-icon icon-6">
+                            <i class="fas fa-map-location-dot"></i>
+                        </div>
+                        <h3>Multi-Shop Sync</h3>
+                    </div>
+                    <p>Manage multiple locations from one dashboard with real-time synchronization and centralized
+                        control.</p>
+                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits" id="benefits">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">Why Choose VyapariMitra?</h2>
+                <p class="section-subtitle">Transform your business with proven results</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-number">1</div>
+                    <h3>Save Time & Money</h3>
+                    <p>Automate daily tasks and reduce operational costs by up to 40% with intelligent management.</p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-number">2</div>
+                    <h3>Increase Revenue</h3>
+                    <p>Better stock management and demand forecasting lead to higher sales and customer satisfaction.
+                    </p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-number">3</div>
+                    <h3>Reduce Waste</h3>
+                    <p>AI-powered alerts help prevent spoilage and product loss, directly impacting your bottom line.
+                    </p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-number">4</div>
+                    <h3>Easy to Use</h3>
+                    <p>Intuitive interface designed for shop owners - no technical expertise required to get started.
+                    </p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-number">5</div>
+                    <h3>24/7 Support</h3>
+                    <p>Dedicated customer support team available round the clock to help with any issues or questions.
+                    </p>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-number">6</div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Bank-level security with encrypted data storage and automated daily backups for peace of mind.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="section-container">
+            <div class="section-header">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-subtitle">Simple steps to manage your shop better</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <h3>Sign Up</h3>
+                    <p>Create your account in minutes with your shop details</p>
+                    <div class="step-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <h3>Setup Inventory</h3>
+                    <p>Add your products and set initial stock levels</p>
+                    <div class="step-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <h3>Start Tracking</h3>
+                    <p>Monitor sales, updates, and inventory in real-time</p>
+                    <div class="step-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">04</div>
+                    <h3>Get Insights</h3>
+                    <p>Receive AI-powered recommendations and analytics</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Shop?</h2>
+            <p>Join thousands of shop owners already using VyapariMitra</p>
+            <div class="cta-buttons">
+                <a href="/signup" class="btn btn-primary btn-large">
+                    <i class="fas fa-rocket"></i> Start Free Trial
+                </a>
+                <a href="/login" class="btn btn-outline btn-large">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>VyapariMitra</h3>
+                <p>Your trusted shop management partner</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#benefits">Benefits</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p>Email: support@vyaparimitra.com</p>
+                <p>Phone: +91-XXXX-XXXX-XX</p>
+            </div>
+            <div class="footer-section">
+                <h4>Follow Us</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 VyapariMitra. All rights reserved. | Empowering Shopkeepers with Smart Technology</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 
 </html>

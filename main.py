@@ -3,9 +3,12 @@ from dotenv import load_dotenv
 import os
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
-import re
+import json
 from bson.objectid import ObjectId
 from datetime import datetime, timedelta
+from functools import wraps
+from collections import defaultdict
+
 
 load_dotenv()
 app = Flask(__name__)
@@ -14,8 +17,6 @@ client = MongoClient(os.getenv("MONGO_URI"))
 db = client[os.getenv("DB_NAME")]
 users_collection = db["users"]
 
-
-
 links = [
     {"index" : "/"},
     {"signup" : "/signup"},
@@ -23,6 +24,35 @@ links = [
     {"logout" : "/logout"},
     {"dashboard" : "/dashboard"},
 ]
+
+
+@app.context_processor
+def inject_user():
+    if "user_id" in session:
+        current_user = db.users.find_one(
+            {"_id": ObjectId(session["user_id"])}
+        )
+        return dict(current_user=current_user)
+    return dict(current_user=None)
+
+def feature_required(feature_name):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if "user_id" not in session:
+                return redirect("/login")
+
+            user = db.users.find_one({"_id": ObjectId(session["user_id"])})
+
+            if not user.get("features", {}).get(feature_name, False):
+                flash(f"{feature_name.capitalize()} feature is disabled!", "danger")
+                return redirect("/dashboard")
+
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 
 @app.route("/")
 def index():
@@ -50,8 +80,17 @@ def signup():
             "email": email,
             "phone": phone,
             "shop_name": shop_name,
-            "password": hashed_password
-        }
+            "password": hashed_password,
+            "features": {
+                "orders": True,
+                "products": True,
+                "expenses": True,
+                "employees": True,
+                "attendance": True,
+                "salary": True
+            }
+            }
+
 
         users_collection.insert_one(user_data)
 
@@ -106,14 +145,76 @@ def logout():
     flash("Logged out successfully!")
     return redirect("/login")
 
+from datetime import datetime, timedelta
+import json
+
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
         return redirect("/login")
 
-    return render_template("dashboard.html")
+    user_id = session["user_id"]
+
+    today = datetime.utcnow()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Prepare last 7 days labels
+    labels = []
+    sales_data = []
+    expense_data = []
+
+    for i in range(7):
+        day = seven_days_ago + timedelta(days=i)
+        next_day = day + timedelta(days=1)
+
+        labels.append(day.strftime("%a"))
+
+        # SALES (Completed Orders Only)
+        daily_orders = db.orders.find({
+            "user_id": user_id,
+            "status": "Completed",
+            "created_at": {
+                "$gte": day,
+                "$lt": next_day
+            }
+        })
+
+        total_sales = sum(order.get("total_amount", 0) for order in daily_orders)
+        sales_data.append(round(total_sales, 2))
+
+        # EXPENSES
+        daily_expenses = db.expenses.find({
+            "user_id": user_id,
+            "date": {
+                "$gte": day,
+                "$lt": next_day
+            }
+        })
+
+        total_expense = sum(exp.get("amount", 0) for exp in daily_expenses)
+        expense_data.append(round(total_expense, 2))
+
+    # ========= SIMPLE SMART PREDICTION =========
+    avg_sales = sum(sales_data) / 7 if sum(sales_data) > 0 else 0
+
+    prediction_data = [
+        round(avg_sales * 0.95, 2),
+        round(avg_sales * 1.05, 2),
+        round(avg_sales * 1.10, 2),
+        round(avg_sales * 1.02, 2),
+    ]
+
+    return render_template(
+        "dashboard.html",
+        labels=json.dumps(labels),
+        sales_data=json.dumps(sales_data),
+        expense_data=json.dumps(expense_data),
+        prediction_data=json.dumps(prediction_data)
+    )
+
 
 @app.route("/orders", methods=["GET", "POST"])
+@feature_required("orders")
 def orders():
     if "user_id" not in session:
         return redirect("/login")
@@ -168,7 +269,7 @@ def orders():
             return redirect("/orders")
 
         db.orders.update_one(
-            {"_id": ObjectId(order_id)},
+            {"_id": ObjectId(order_id), "user_id": session["user_id"]},
             {"$set": {
                 "status": "Completed",
                 "payment_method": request.form.get("payment_method"),
@@ -208,7 +309,7 @@ def orders():
             total_amount += price * qty
 
         db.orders.update_one(
-            {"_id": ObjectId(order_id)},
+            {"_id": ObjectId(order_id), "user_id": session["user_id"]},
             {"$set": {
                 "customer_name": request.form.get("customer_name"),
                 "items": items,
@@ -229,7 +330,7 @@ def orders():
             return redirect("/orders")
 
         db.orders.update_one(
-            {"_id": ObjectId(order_id)},
+            {"_id": ObjectId(order_id), "user_id": session["user_id"]},
             {"$set": {"status": "Cancelled"}}
         )
 
@@ -244,7 +345,7 @@ def orders():
             return redirect("/orders")
 
         db.orders.update_one(
-            {"_id": ObjectId(order_id)},
+            {"_id": ObjectId(order_id), "user_id": session["user_id"]},
             {"$set": {
                 "status": "Refunded",
                 "refunded_at": datetime.utcnow()
@@ -264,7 +365,7 @@ def orders():
             return redirect("/orders")
 
         db.orders.update_one(
-            {"_id": ObjectId(order_id)},
+            {"_id": ObjectId(order_id), "user_id": session["user_id"]},
             {"$set": {
                 "status": "Pending",
                 "created_at": datetime.utcnow(),
@@ -299,6 +400,7 @@ def orders():
 
 
 @app.route("/products", methods=["GET", "POST"])
+@feature_required("products")
 def products():
     if "user_id" not in session:
         return redirect("/login")
@@ -355,6 +457,7 @@ def products():
                            categories=categories)
 
 @app.route("/expenses", methods=["GET", "POST"])
+@feature_required("expenses")
 def expenses():
     if "user_id" not in session:
         return redirect("/login")
@@ -464,6 +567,7 @@ def profile():
     return render_template("profile.html", user=user)
 
 @app.route("/employees", methods=["GET", "POST"])
+@feature_required("employees")
 def employees():
     if "user_id" not in session:
         return redirect("/login")
@@ -545,6 +649,7 @@ def employees():
     )
 
 @app.route("/attendance", methods=["GET", "POST"])
+@feature_required("attendance")
 def attendance():
     if "user_id" not in session:
         return redirect("/login")
@@ -560,6 +665,7 @@ def attendance():
 
         # Check if already marked today
         existing = db.attendance.find_one({
+            "user_id": session["user_id"],
             "employee_id": str(employee_id),
             "date": {
                 "$gte": today_start,
@@ -610,6 +716,7 @@ def attendance():
         today=today_start
     )
 @app.route("/salary", methods=["GET", "POST"])
+@feature_required("salary")
 def salary():
     if "user_id" not in session:
         return redirect("/login")
@@ -681,6 +788,7 @@ def salary():
 
         # ===== CHECK SALARY STATUS =====
         salary_record = db.salary.find_one({
+            "user_id": session["user_id"],
             "employee_id": emp_id,
             "month": current_month,
             "year": current_year

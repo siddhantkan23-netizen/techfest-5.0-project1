@@ -1,29 +1,81 @@
 <div class="sidebar">
-    <h4 class="text-center mb-4">My Shop</h4>
 
-    <a href="/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-    <a href="/orders"><i class="bi bi-cart3 me-2"></i>Orders</a>
-    <a href="/products"><i class="bi bi-box-seam me-2"></i>Products</a>
-    <a href="/expenses"><i class="bi bi-wallet2 me-2"></i>Expenses</a>
-    <a href="/employees"><i class="bi bi-people me-2"></i>Employees</a>
-    <a href="/salary"><i class="bi bi-cash-stack me-2"></i>Salary</a>
-    <a href="/attendance"><i class="bi bi-calendar-check me-2"></i>Attendance</a>
-    <a href="/settings"><i class="bi bi-gear me-2"></i>Settings</a>
-    <a href="/help"><i class="bi bi-life-preserver me-2"></i>Help & Support</a>
-    <a href="/logout" class="text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
-    <hr class="text-light">
+    <!-- Shop Info -->
+    <div class="text-center px-3">
+        <h5 class="fw-bold mb-1">
+            {{ current_user.shop_name if current_user and current_user.shop_name else "My Shop" }}
+        </h5>
+        <small class="text-light opacity-75">
+            Welcome, {{ current_user.name if current_user else "" }}
+        </small>
+    </div>
 
-<div class="text-center mt-4">
-    <a href="/profile" class="text-white text-decoration-none">
-        <img src="{{ current_user.profile_image if current_user and current_user.profile_image else 'https://via.placeholder.com/80' }}"
-             class="rounded-circle mb-2"
-             width="80"
-             height="80"
-             style="object-fit:cover;">
-        <div>
-            <strong>{{ current_user.name if current_user else "My Profile" }}</strong>
-        </div>
+    <hr class="my-3">
+
+    {% set features = current_user.get("features", {}) if current_user else {} %}
+
+    <a href="/dashboard">
+        <i class="bi bi-speedometer2 me-2"></i>Dashboard
     </a>
-</div>
+
+    {% if features.get("orders") %}
+    <a href="/orders">
+        <i class="bi bi-cart3 me-2"></i>Orders
+    </a>
+    {% endif %}
+
+    {% if features.get("products") %}
+    <a href="/products">
+        <i class="bi bi-box-seam me-2"></i>Products
+    </a>
+    {% endif %}
+
+    {% if features.get("expenses") %}
+    <a href="/expenses">
+        <i class="bi bi-wallet2 me-2"></i>Expenses
+    </a>
+    {% endif %}
+
+    {% if features.get("employees") %}
+    <a href="/employees">
+        <i class="bi bi-people me-2"></i>Employees
+    </a>
+    {% endif %}
+
+    {% if features.get("salary") %}
+    <a href="/salary">
+        <i class="bi bi-cash-stack me-2"></i>Salary
+    </a>
+    {% endif %}
+
+    {% if features.get("attendance") %}
+    <a href="/attendance">
+        <i class="bi bi-calendar-check me-2"></i>Attendance
+    </a>
+    {% endif %}
+
+    <a href="/settings">
+        <i class="bi bi-gear me-2"></i>Settings
+    </a>
+
+    <a href="/logout" class="text-danger">
+        <i class="bi bi-box-arrow-right me-2"></i>Logout
+    </a>
+
+    <!-- Profile Section -->
+    <div class="profile-section text-center">
+        <hr>
+        <a href="/profile" class="text-white text-decoration-none">
+            <img src="data:image/jpeg;base64,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"
+                 class="rounded-circle mb-2"
+                 width="80"
+                 height="80"
+                 style="object-fit:cover;">
+
+            <div>
+                <strong>{{ current_user.name if current_user else "My Profile" }}</strong>
+            </div>
+        </a>
+    </div>
 
 </div>

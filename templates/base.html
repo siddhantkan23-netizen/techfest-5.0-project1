@@ -11,19 +11,26 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
-        body { background: #f4f6f9; }
+        body {
+            background: #f4f6f9;
+            overflow-x: hidden;
+        }
+
+        /* ================= SIDEBAR ================= */
 
         .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
             height: 100vh;
             background: #1e3c72;
             color: white;
-            padding-top: 20px;
-            position: fixed;
-            width: 220px;
+            padding: 20px 0;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1050;
         }
 
         .sidebar a {
@@ -38,14 +45,43 @@
             background: rgba(255,255,255,0.1);
         }
 
+        .sidebar hr {
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* ================= CONTENT ================= */
+
         .content {
-            margin-left: 220px;
             padding: 25px;
+            margin-left: 240px;
+            transition: 0.3s;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 768px) {
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
         }
 
         .card {
             border: none;
             border-radius: 15px;
+        }
+
+        .profile-section {
+            margin-top: 40px;
         }
     </style>
 
@@ -54,18 +90,50 @@
 
 <body>
 
-    {% include "partials/sidebar.html" %}
-
-    <div class="content">
-        {% block content %}{% endblock %}
+<!-- Mobile Navbar -->
+<nav class="navbar navbar-dark bg-dark d-md-none">
+    <div class="container-fluid">
+        <button class="btn btn-outline-light" id="sidebarToggle">
+            <i class="bi bi-list"></i>
+        </button>
+        <span class="navbar-brand mb-0 h1">
+            {{ current_user.shop_name if current_user else "My Shop" }}
+        </span>
     </div>
+</nav>
 
-    {% block extra_js %}{% endblock %}
-<!-- Bootstrap CSS in <head> -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+{% include "partials/sidebar.html" %}
 
-<!-- Bootstrap JS before </body> -->
+<div class="content">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const toggleBtn = document.getElementById("sidebarToggle");
+    const sidebar = document.querySelector(".sidebar");
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", function() {
+            sidebar.classList.toggle("active");
+        });
+    }
+
+    // Close sidebar when clicking outside (mobile)
+    document.addEventListener("click", function(event) {
+        if (window.innerWidth <= 768) {
+            if (!sidebar.contains(event.target) && !toggleBtn.contains(event.target)) {
+                sidebar.classList.remove("active");
+            }
+        }
+    });
+});
+</script>
+
+{% block extra_js %}{% endblock %}
 
 </body>
 </html>

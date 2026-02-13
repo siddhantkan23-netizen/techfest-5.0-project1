@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
@@ -7,26 +6,26 @@
 <h2 class="mb-4">Dashboard Overview</h2>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 mb-4">
         <div class="card shadow-sm p-3">
-            <h6>Sales Overview</h6>
-            <canvas id="salesChart"></canvas>
+            <h6>Sales (Last 7 Days)</h6>
+            <canvas id="salesChart" height="200"></canvas>
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-6 mb-4">
         <div class="card shadow-sm p-3">
-            <h6>Expenses Overview</h6>
-            <canvas id="expenseChart"></canvas>
+            <h6>Expenses (Last 7 Days)</h6>
+            <canvas id="expenseChart" height="200"></canvas>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
+<div class="row mt-2">
     <div class="col-md-12">
         <div class="card shadow-sm p-3">
-            <h6>AI Sales Prediction</h6>
-            <canvas id="predictionChart"></canvas>
+            <h6>AI Sales Prediction (Next 4 Weeks)</h6>
+            <canvas id="predictionChart" height="120"></canvas>
         </div>
     </div>
 </div>
@@ -34,43 +33,73 @@
 {% endblock %}
 
 {% block extra_js %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
+
+const labels = {{ labels|safe }};
+const salesData = {{ sales_data|safe }};
+const expenseData = {{ expense_data|safe }};
+const predictionData = {{ prediction_data|safe }};
+
+// ================= SALES =================
 new Chart(document.getElementById('salesChart'), {
     type: 'bar',
     data: {
-        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        labels: labels,
         datasets: [{
             label: 'Sales',
-            data: [1200,1900,1500,2200,1800,2500,3000],
+            data: salesData,
             backgroundColor: '#4e73df'
         }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: true }
+        }
     }
 });
 
+// ================= EXPENSES =================
 new Chart(document.getElementById('expenseChart'), {
     type: 'line',
     data: {
-        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+        labels: labels,
         datasets: [{
             label: 'Expenses',
-            data: [800,900,1000,1200,950,1100,1300],
+            data: expenseData,
             borderColor: '#e74a3b',
-            fill: false
+            backgroundColor: 'rgba(231,74,59,0.1)',
+            tension: 0.3,
+            fill: true
         }]
+    },
+    options: {
+        responsive: true
     }
 });
 
+// ================= PREDICTION =================
 new Chart(document.getElementById('predictionChart'), {
     type: 'line',
     data: {
-        labels: ['Week 1','Week 2','Week 3','Week 4'],
+        labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
         datasets: [{
             label: 'Predicted Sales',
-            data: [5000,6200,7000,8500],
+            data: predictionData,
             borderColor: '#1cc88a',
+            backgroundColor: 'rgba(28,200,138,0.1)',
+            tension: 0.4,
             fill: true
         }]
+    },
+    options: {
+        responsive: true
     }
 });
+
 </script>
+
 {% endblock %}

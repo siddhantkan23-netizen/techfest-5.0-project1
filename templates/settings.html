@@ -5,48 +5,85 @@
 
 <h2 class="mb-4">Feature Settings</h2>
 
-<form method="POST">
-<div class="card shadow-sm p-4">
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
-    <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" name="orders"
-        {% if user.features.orders %}checked{% endif %}>
-        <label class="form-check-label">Enable Orders</label>
+{% if user %}
+    {% set features = user.get("features", {}) %}
+
+    <form method="POST">
+        <div class="card shadow-sm p-4">
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="orders"
+                {% if features.get("orders", False) %}checked{% endif %}>
+                <label class="form-check-label fw-semibold">
+                    Enable Orders
+                </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="products"
+                {% if features.get("products", False) %}checked{% endif %}>
+                <label class="form-check-label fw-semibold">
+                    Enable Products
+                </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="expenses"
+                {% if features.get("expenses", False) %}checked{% endif %}>
+                <label class="form-check-label fw-semibold">
+                    Enable Expenses
+                </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="employees"
+                {% if features.get("employees", False) %}checked{% endif %}>
+                <label class="form-check-label fw-semibold">
+                    Enable Employees
+                </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="attendance"
+                {% if features.get("attendance", False) %}checked{% endif %}>
+                <label class="form-check-label fw-semibold">
+                    Enable Attendance
+                </label>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" name="salary"
+                {% if features.get("salary", False) %}checked{% endif %}>
+                <label class="form-check-label fw-semibold">
+                    Enable Salary
+                </label>
+            </div>
+
+            <button class="btn btn-primary mt-3">
+                Save Settings
+            </button>
+
+        </div>
+    </form>
+
+{% else %}
+
+    <div class="alert alert-danger">
+        User not found. Please login again.
     </div>
 
-    <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" name="products"
-        {% if user.features.products %}checked{% endif %}>
-        <label class="form-check-label">Enable Products</label>
-    </div>
-
-    <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" name="expenses"
-        {% if user.features.expenses %}checked{% endif %}>
-        <label class="form-check-label">Enable Expenses</label>
-    </div>
-
-    <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" name="employees"
-        {% if user.features.employees %}checked{% endif %}>
-        <label class="form-check-label">Enable Employees</label>
-    </div>
-
-    <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" name="attendance"
-        {% if user.features.attendance %}checked{% endif %}>
-        <label class="form-check-label">Enable Attendance</label>
-    </div>
-
-    <div class="form-check form-switch mb-3">
-        <input class="form-check-input" type="checkbox" name="salary"
-        {% if user.features.salary %}checked{% endif %}>
-        <label class="form-check-label">Enable Salary</label>
-    </div>
-
-    <button class="btn btn-primary mt-3">Save Settings</button>
-
-</div>
-</form>
+{% endif %}
 
 {% endblock %}
