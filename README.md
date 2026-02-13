@@ -2,7 +2,7 @@
 
 # 🏪 Vyapari Mitra
 
-### AI-Powered Smart Business Management System for Vendors
+### Smart Business Management System for Vendors
 
 **TechFest 5.0 – CODE-A-THONE**
 
@@ -163,4 +163,5 @@ This flow ensures real-time data storage, intelligent analysis, and actionable i
 * Siddhant Kannojia
 * Shreya Tiwari
 * Lav Pandey
+
 
