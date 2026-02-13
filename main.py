@@ -115,56 +115,230 @@ def dashboard():
 
 @app.route("/orders", methods=["GET", "POST"])
 def orders():
+
+    # ================= CREATE ORDER =================
     if request.method == "POST" and request.form.get("action") == "create":
+
+        cart_raw = request.form.get("cart_data")
+
+        if not cart_raw:
+            flash("Cart is empty!")
+            return redirect("/orders")
+
+        cart_data = json.loads(cart_raw)
+
+        items = []
+        total_amount = 0
+
+        for product_id, item in cart_data.items():
+            price = float(item.get("price", 0))
+            qty = int(item.get("qty", 0))
+
+            items.append({
+                "product_id": product_id,
+                "name": item.get("name"),
+                "price": price,
+                "qty": qty
+            })
+
+            total_amount += price * qty
+
         order_data = {
             "customer_name": request.form.get("customer_name"),
-            "total_amount": float(request.form.get("total_amount")),
+            "items": items,
+            "total_amount": total_amount,
             "status": "Pending",
             "created_at": datetime.utcnow()
         }
+
         db.orders.insert_one(order_data)
         flash("Order Created Successfully!")
         return redirect("/orders")
 
 
-    # EDIT ORDER
-    if request.method == "POST" and request.form.get("action") == "edit":
+    # ================= COMPLETE ORDER =================
+    if request.method == "POST" and request.form.get("action") == "complete":
+
         order_id = request.form.get("order_id")
+        if not order_id:
+            return redirect("/orders")
+
+        db.orders.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {
+                "status": "Completed",
+                "payment_method": request.form.get("payment_method"),
+                "completed_at": datetime.utcnow()
+            }}
+        )
+
+        return redirect("/orders")
+
+
+    # ================= EDIT ORDER =================
+    if request.method == "POST" and request.form.get("action") == "edit_order":
+
+        order_id = request.form.get("order_id")
+        cart_raw = request.form.get("cart_data")
+
+        if not order_id or not cart_raw:
+            flash("Invalid update request!")
+            return redirect("/orders")
+
+        cart_data = json.loads(cart_raw)
+
+        items = []
+        total_amount = 0
+
+        for product_id, item in cart_data.items():
+            price = float(item.get("price", 0))
+            qty = int(item.get("qty", 0))
+
+            items.append({
+                "product_id": product_id,
+                "name": item.get("name"),
+                "price": price,
+                "qty": qty
+            })
+
+            total_amount += price * qty
+
         db.orders.update_one(
             {"_id": ObjectId(order_id)},
             {"$set": {
                 "customer_name": request.form.get("customer_name"),
-                "total_amount": float(request.form.get("total_amount"))
+                "items": items,
+                "total_amount": total_amount,
+                "updated_at": datetime.utcnow()
             }}
         )
+
         flash("Order Updated Successfully!")
         return redirect("/orders")
 
 
-    # DELETE ORDER
-    if request.method == "POST" and request.form.get("action") == "delete":
-        order_id = request.form.get("order_id")
-        db.orders.delete_one({"_id": ObjectId(order_id)})
-        flash("Order Deleted Successfully!")
-        return redirect("/orders")
-
-
-    # CANCEL ORDER
+    # ================= CANCEL ORDER =================
     if request.method == "POST" and request.form.get("action") == "cancel":
+
         order_id = request.form.get("order_id")
+        if not order_id:
+            return redirect("/orders")
+
         db.orders.update_one(
             {"_id": ObjectId(order_id)},
             {"$set": {"status": "Cancelled"}}
         )
-        flash("Order Cancelled!")
+
         return redirect("/orders")
 
 
-    # GET ALL ORDERS
+    # ================= REFUND ORDER =================
+    if request.method == "POST" and request.form.get("action") == "refund":
+
+        order_id = request.form.get("order_id")
+        if not order_id:
+            return redirect("/orders")
+
+        db.orders.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {
+                "status": "Refunded",
+                "refunded_at": datetime.utcnow()
+            }}
+        )
+
+        flash("Order Refunded Successfully!")
+        return redirect("/orders")
+
+
+    # ================= REORDER (FIXED VERSION) =================
+    # ================= REORDER (REACTIVATE VERSION) =================
+    if request.method == "POST" and request.form.get("action") == "reorder":
+
+        order_id = request.form.get("order_id")
+        if not order_id:
+            return redirect("/orders")
+
+        db.orders.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {
+                "status": "Pending",
+                "created_at": datetime.utcnow(),
+                "completed_at": None,
+                "payment_method": None
+            }}
+        )
+
+        flash("Order Re-Activated Successfully!")
+        return redirect("/orders")
+
+
+
+    # ================= GET DATA =================
+    products = list(db.products.find())
     orders = list(db.orders.find().sort("created_at", -1))
 
-    return render_template("orders.html", orders=orders)
+    pending_count = db.orders.count_documents({"status": "Pending"})
+    completed_count = db.orders.count_documents({"status": "Completed"})
+    cancelled_count = db.orders.count_documents({"status": "Cancelled"})
 
+    return render_template(
+        "orders.html",
+        products=products,
+        orders=orders,
+        pending_count=pending_count,
+        completed_count=completed_count,
+        cancelled_count=cancelled_count
+    )
+
+
+
+@app.route("/products", methods=["GET", "POST"])
+def products():
+    if request.method == "POST":
+
+        action = request.form.get("action")
+        if action == "create":
+            db.products.insert_one({
+                "name": request.form.get("name"),
+                "description": request.form.get("description"),
+                "category": request.form.get("category"),
+                "price": float(request.form.get("price"))
+            })
+
+        # DELETE PRODUCT
+        if action == "delete":
+            db.products.delete_one({
+                "_id": ObjectId(request.form.get("product_id"))
+            })
+
+        # ADD CATEGORY
+        if action == "add_category":
+            db.categories.insert_one({
+                "name": request.form.get("category_name")
+            })
+
+        if action == "edit":
+            db.products.update_one(
+                {"_id": ObjectId(request.form.get("product_id"))},
+                {"$set": {
+                    "name": request.form.get("name"),
+                    "description": request.form.get("description"),
+                    "category": request.form.get("category"),
+                    "price": float(request.form.get("price"))
+                }}
+            )
+
+
+        return redirect("/products")
+        
+
+    products = list(db.products.find())
+    categories = list(db.categories.find())
+
+    return render_template("products.html",
+                           products=products,
+                           categories=categories)
 
 if __name__ == "__main__":
     app.run(debug=True)
