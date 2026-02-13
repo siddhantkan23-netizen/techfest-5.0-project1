@@ -125,10 +125,9 @@ This flow ensures real-time data storage, intelligent analysis, and actionable i
 
 *(Modify as per actual implementation)*
 
-* Frontend: HTML, CSS, JavaScript / React
+* Frontend: HTML, CSS, JavaScript
 * Backend: Node.js / Python / Django
-* Database: MySQL / MongoDB
-* AI Model: Machine Learning (Sales Prediction)
+* Database: MongoDB
 
 -----------------------------------------------------------
 
@@ -164,3 +163,4 @@ This flow ensures real-time data storage, intelligent analysis, and actionable i
 * Siddhant Kannojia
 * Shreya Tiwari
 * Lav Pandey
+
