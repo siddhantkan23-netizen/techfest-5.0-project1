@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Attendance{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Attendance - {{ today.strftime("%d %b %Y") }}
+</h2>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="card shadow-sm p-3">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Employee</th>
+                <th>Position</th>
+                <th>Status</th>
+                <th width="250">Mark Attendance</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for employee in employees %}
+            {% set status = attendance_map.get(employee._id|string) %}
+            <tr>
+                <td>{{ employee.name }}</td>
+                <td>{{ employee.position }}</td>
+
+                <!-- STATUS BADGE -->
+                <td>
+                    {% if status == "Present" %}
+                        <span class="badge bg-success">Present</span>
+                    {% elif status == "Absent" %}
+                        <span class="badge bg-danger">Absent</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Not Marked</span>
+                    {% endif %}
+                </td>
+
+                <!-- ACTION BUTTONS -->
+                <td>
+
+                    {% if status == "Present" %}
+                        <button class="btn btn-success btn-sm w-100" disabled>
+                            <i class="bi bi-check-circle"></i> Marked Present Today
+                        </button>
+
+                    {% elif status == "Absent" %}
+                        <button class="btn btn-danger btn-sm w-100" disabled>
+                            <i class="bi bi-x-circle"></i> Marked Absent Today
+                        </button>
+
+                    {% else %}
+
+                        <div class="d-flex gap-2">
+
+                            <!-- Present -->
+                            <form method="POST" action="/attendance" class="w-50">
+                                <input type="hidden" name="action" value="mark">
+                                <input type="hidden" name="employee_id" value="{{ employee._id }}">
+                                <input type="hidden" name="status" value="Present">
+                                <button class="btn btn-success btn-sm w-100">
+                                    <i class="bi bi-check-circle"></i> Present
+                                </button>
+                            </form>
+
+                            <!-- Absent -->
+                            <form method="POST" action="/attendance" class="w-50">
+                                <input type="hidden" name="action" value="mark">
+                                <input type="hidden" name="employee_id" value="{{ employee._id }}">
+                                <input type="hidden" name="status" value="Absent">
+                                <button class="btn btn-danger btn-sm w-100">
+                                    <i class="bi bi-x-circle"></i> Absent
+                                </button>
+                            </form>
+
+                        </div>
+
+                    {% endif %}
+
+                </td>
+            </tr>
+
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">
+                    No employees found.
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

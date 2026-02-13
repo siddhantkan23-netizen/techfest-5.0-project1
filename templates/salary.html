@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Salary{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">
+    Salary - {{ current_month }}/{{ current_year }}
+</h2>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="card shadow-sm p-3">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Employee</th>
+                <th>Present Days</th>
+                <th>Deduction Days</th>
+                <th>Deduction Amount</th>
+                <th>Final Salary</th>
+                <th>Status</th>
+                <th width="150">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for data in salary_data %}
+            <tr>
+                <td>{{ data.employee.name }}</td>
+                <td>{{ data.present_days }}</td>
+                <td>{{ data.deduction_days }}</td>
+                <td>₹{{ data.deduction_amount }}</td>
+                <td><strong>₹{{ data.final_salary }}</strong></td>
+
+                <td>
+                    {% if data.status == "Paid" %}
+                        <span class="badge bg-success">Paid</span>
+                    {% else %}
+                        <span class="badge bg-danger">Not Paid</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if data.status == "Paid" %}
+                        <button class="btn btn-success btn-sm w-100" disabled>
+                            Salary Distributed
+                        </button>
+                    {% else %}
+                        <form method="POST" action="/salary">
+                            <input type="hidden" name="action" value="pay">
+                            <input type="hidden" name="employee_id" value="{{ data.employee._id }}">
+                            <button class="btn btn-primary btn-sm w-100">
+                                Give Salary
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">
+                    No employees found.
+                </td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

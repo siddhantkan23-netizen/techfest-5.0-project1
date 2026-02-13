@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Feature Settings</h2>
+
+<form method="POST">
+<div class="card shadow-sm p-4">
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" name="orders"
+        {% if user.features.orders %}checked{% endif %}>
+        <label class="form-check-label">Enable Orders</label>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" name="products"
+        {% if user.features.products %}checked{% endif %}>
+        <label class="form-check-label">Enable Products</label>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" name="expenses"
+        {% if user.features.expenses %}checked{% endif %}>
+        <label class="form-check-label">Enable Expenses</label>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" name="employees"
+        {% if user.features.employees %}checked{% endif %}>
+        <label class="form-check-label">Enable Employees</label>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" name="attendance"
+        {% if user.features.attendance %}checked{% endif %}>
+        <label class="form-check-label">Enable Attendance</label>
+    </div>
+
+    <div class="form-check form-switch mb-3">
+        <input class="form-check-input" type="checkbox" name="salary"
+        {% if user.features.salary %}checked{% endif %}>
+        <label class="form-check-label">Enable Salary</label>
+    </div>
+
+    <button class="btn btn-primary mt-3">Save Settings</button>
+
+</div>
+</form>
+
+{% endblock %}
