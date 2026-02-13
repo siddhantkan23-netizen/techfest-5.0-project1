@@ -4,6 +4,8 @@ import os
 from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
+from bson.objectid import ObjectId
+from datetime import datetime
 
 load_dotenv()
 app = Flask(__name__)
@@ -109,7 +111,59 @@ def dashboard():
     if "user_id" not in session:
         return redirect("/login")
 
-    return f"Welcome {session['user_name']}! This is your dashboard."
+    return render_template("dashboard.html")
+
+@app.route("/orders", methods=["GET", "POST"])
+def orders():
+    if request.method == "POST" and request.form.get("action") == "create":
+        order_data = {
+            "customer_name": request.form.get("customer_name"),
+            "total_amount": float(request.form.get("total_amount")),
+            "status": "Pending",
+            "created_at": datetime.utcnow()
+        }
+        db.orders.insert_one(order_data)
+        flash("Order Created Successfully!")
+        return redirect("/orders")
+
+
+    # EDIT ORDER
+    if request.method == "POST" and request.form.get("action") == "edit":
+        order_id = request.form.get("order_id")
+        db.orders.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {
+                "customer_name": request.form.get("customer_name"),
+                "total_amount": float(request.form.get("total_amount"))
+            }}
+        )
+        flash("Order Updated Successfully!")
+        return redirect("/orders")
+
+
+    # DELETE ORDER
+    if request.method == "POST" and request.form.get("action") == "delete":
+        order_id = request.form.get("order_id")
+        db.orders.delete_one({"_id": ObjectId(order_id)})
+        flash("Order Deleted Successfully!")
+        return redirect("/orders")
+
+
+    # CANCEL ORDER
+    if request.method == "POST" and request.form.get("action") == "cancel":
+        order_id = request.form.get("order_id")
+        db.orders.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {"status": "Cancelled"}}
+        )
+        flash("Order Cancelled!")
+        return redirect("/orders")
+
+
+    # GET ALL ORDERS
+    orders = list(db.orders.find().sort("created_at", -1))
+
+    return render_template("orders.html", orders=orders)
 
 
 if __name__ == "__main__":

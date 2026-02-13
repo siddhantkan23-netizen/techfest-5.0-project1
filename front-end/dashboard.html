@@ -1,61 +1,23 @@
-<div id="header"></div>
-<div id="sidebar"></div>
-<div id="footer"></div>
-<script>
-fetch('partials/header.html')
-  .then(res => res.text())
-  .then(data => document.getElementById('header').innerHTML = data);
+{% include "partials/header.html" %}
+{% include "partials/sidebar.html" %}
 
-fetch('partials/sidebar.html')
-  .then(res => res.text())
-  .then(data => document.getElementById('sidebar').innerHTML = data);
+<div class="container mt-4">
+    <h2>Dashboard</h2>
 
-  fetch('partials/footer.html')
-  .then(res => res.text())
-  .then(data => document.getElementById('footer').innerHTML = data);
-</script>
-
-
-<div id="sidebar"></div>
-
-<div class="page-wrapper" style="margin-top: -70px;">
-
-    <div id="header"></div>
-
-    <div class="main-content">
-
-        <div class="row g-4 mt-3">
-
-            <!-- Graph Box 1 -->
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3">
-                    <h6 class="mb-3 text-success">Sales Trend</h6>
-                    <div style="height:260px;"></div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 p-3">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <small class="text-muted">Daily Sales</small>
+                    <h3 class="fw-bold mt-2">₹2,450</h3>
+                </div>
+                <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:50px;height:50px;">
+                    <i class="bi bi-graph-up fs-4"></i>
                 </div>
             </div>
-
-            <!-- Graph Box 2 -->
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3">
-                    <h6 class="mb-3 text-success">Spoilage Analysis</h6>
-                    <div style="height:260px;"></div>
-                </div>
-            </div>
-
         </div>
-        <div class="mt-2">
-    <div class="card border-0 shadow-sm rounded-4 p-3 w-100">
-        <h6 class="mb-3 text-success">Spoilage Analysis</h6>
-        <div style="height:260px;"></div>
     </div>
 </div>
 
-</div>
-
-
-
-    </div>
-
-    <div id="footer"></div>
-
-</div>
+{% include "partials/footer.html" %}
